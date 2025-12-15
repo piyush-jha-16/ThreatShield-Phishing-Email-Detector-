@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreatShield - Email Phishing Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal active">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 2L4 8V14C4 21 9 27.5 16 30C23 27.5 28 21 28 14V8L16 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 16L15 19L20 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>ThreatShield</span>
+                    </div>
+                    <p class="auth-subtitle">Advanced Email Threat Detection Platform</p>
+                </div>
+
+                <!-- Login Form -->
+                <div id="loginForm" class="auth-form active">
+                    <h2>Sign In</h2>
+                    <p class="form-description">Access your security dashboard</p>
+                    
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" id="loginUsername" name="username" required autocomplete="username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" name="password" required autocomplete="current-password">
+                        </div>
+                        
+                        <div id="loginError" class="error-message"></div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <span>Sign In</span>
+                        </button>
+                    </form>
+                    
+                    <div class="auth-switch">
+                        <span>Don't have an account?</span>
+                        <button class="link-btn" onclick="switchToRegister()">Create Account</button>
+                    </div>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerForm" class="auth-form">
+                    <h2>Create Account</h2>
+                    <p class="form-description">Register for security analysis access</p>
+                    
+                    <form id="registerFormElement">
+                        <div class="form-group">
+                            <label for="registerUsername">Username</label>
+                            <input type="text" id="registerUsername" name="username" required autocomplete="username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerEmail">Email Address</label>
+                            <input type="email" id="registerEmail" name="email" required autocomplete="email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword" name="password" required autocomplete="new-password" minlength="8">
+                            <span class="field-hint">Minimum 8 characters required</span>
+                        </div>
+                        
+                        <div id="registerError" class="error-message"></div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <span>Create Account</span>
+                        </button>
+                    </form>
+                    
+                    <div class="auth-switch">
+                        <span>Already have an account?</span>
+                        <button class="link-btn" onclick="switchToLogin()">Sign In</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 2L4 8V14C4 21 9 27.5 16 30C23 27.5 28 21 28 14V8L16 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 16L15 19L20 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>ThreatShield</span>
+                    </div>
+                    <span class="header-divider"></span>
+                    <span class="header-title">Email Threat Analysis</span>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M6 21V19C6 16.7909 7.79086 15 10 15H14C16.2091 15 18 16.7909 18 19V21"/>
+                        </svg>
+                        <span id="currentUser"></span>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="handleLogout()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h1>Email Security Analysis</h1>
+                    <p class="subtitle">Advanced rule-based threat detection system for identifying phishing attempts and malicious email content</p>
+                </div>
+
+                <!-- Analysis Mode Tabs -->
+                <div class="analysis-tabs">
+                    <button class="tab-btn active" data-tab="manual" onclick="switchTab('manual')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>Manual Analysis</span>
+                    </button>
+                    <button class="tab-btn" data-tab="file" onclick="switchTab('file')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                            <polyline points="13 2 13 9 20 9"/>
+                        </svg>
+                        <span>File Upload (.eml)</span>
+                    </button>
+                </div>
+
+                <!-- Manual Analysis Panel -->
+                <div id="manualPanel" class="analysis-panel active">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Manual Email Analysis</h3>
+                            <p>Enter email details for security analysis</p>
+                        </div>
+                        
+                        <form id="manualAnalysisForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="emailSender">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="8" r="4"/>
+                                            <path d="M6 21V19C6 16.7909 7.79086 15 10 15H14C16.2091 15 18 16.7909 18 19V21"/>
+                                        </svg>
+                                        Sender Email Address
+                                    </label>
+                                    <input type="email" id="emailSender" name="sender" placeholder="example@domain.com" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="emailSubject">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="4" y1="9" x2="20" y2="9"/>
+                                            <line x1="4" y1="15" x2="20" y2="15"/>
+                                            <line x1="10" y1="3" x2="8" y2="21"/>
+                                            <line x1="16" y1="3" x2="14" y2="21"/>
+                                        </svg>
+                                        Subject Line
+                                    </label>
+                                    <input type="text" id="emailSubject" name="subject" placeholder="Email subject" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="emailBody">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 7V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/>
+                                            <path d="M9 12h6"/>
+                                        </svg>
+                                        Email Body Content
+                                    </label>
+                                    <textarea id="emailBody" name="body" rows="8" placeholder="Paste the email body content here..." required></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <path d="M21 21l-4.35-4.35"/>
+                                    </svg>
+                                    <span>Analyze Email</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="clearManualForm()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 6h18"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                    <span>Clear</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- File Upload Panel -->
+                <div id="filePanel" class="analysis-panel">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Email File Analysis</h3>
+                            <p>Upload .eml files for comprehensive analysis</p>
+                        </div>
+                        
+                        <form id="fileAnalysisForm">
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-icon">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17 8 12 3 7 8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <h4>Upload Email File</h4>
+                                <p>Drag and drop your .eml file here, or click to browse</p>
+                                <input type="file" id="emlFileInput" accept=".eml" hidden>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('emlFileInput').click()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                                        <polyline points="13 2 13 9 20 9"/>
+                                    </svg>
+                                    <span>Select File</span>
+                                </button>
+                            </div>
+                            
+                            <div id="fileSelected" class="file-selected" style="display: none;">
+                                <div class="file-info">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                                        <polyline points="13 2 13 9 20 9"/>
+                                    </svg>
+                                    <div class="file-details">
+                                        <span class="file-name" id="selectedFileName"></span>
+                                        <span class="file-size" id="selectedFileSize"></span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-icon" onclick="clearFileSelection()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="analyzeFileBtn" disabled>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <path d="M21 21l-4.35-4.35"/>
+                                    </svg>
+                                    <span>Analyze File</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="results-section" style="display: none;">
+                    <div class="results-header">
+                        <h2>Analysis Results</h2>
+                        <button class="btn btn-secondary btn-sm" onclick="clearResults()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            <span>Clear Results</span>
+                        </button>
+                    </div>
+
+                    <!-- Risk Score Card -->
+                    <div class="result-card risk-card">
+                        <div class="risk-score-container">
+                            <div class="risk-score-circle">
+                                <svg class="risk-score-svg" width="120" height="120">
+                                    <circle cx="60" cy="60" r="52" fill="none" stroke="#2a2e35" stroke-width="8"/>
+                                    <circle id="riskScoreCircle" cx="60" cy="60" r="52" fill="none" stroke-width="8" 
+                                            stroke-linecap="round" transform="rotate(-90 60 60)" 
+                                            stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+                                </svg>
+                                <div class="risk-score-text">
+                                    <span class="risk-score-value" id="riskScoreValue">0</span>
+                                    <span class="risk-score-label">Risk Score</span>
+                                </div>
+                            </div>
+                            <div class="risk-info">
+                                <div class="classification-badge" id="classificationBadge">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                    </svg>
+                                    <span id="classificationText">UNKNOWN</span>
+                                </div>
+                                <h3>Threat Assessment</h3>
+                                <p id="classificationDescription">Analysis in progress...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detection Flags -->
+                    <div class="result-card">
+                        <div class="card-header">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                                Detection Flags
+                            </h3>
+                        </div>
+                        <div id="flagsList" class="flags-list">
+                            <!-- Flags will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Technical Details -->
+                    <div class="result-card">
+                        <div class="card-header">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 18 22 12 16 6"/>
+                                    <polyline points="8 6 2 12 8 18"/>
+                                </svg>
+                                Technical Details
+                            </h3>
+                        </div>
+                        <div id="detailsList" class="details-list">
+                            <!-- Details will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Analyzing email security...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 ThreatShield. Enterprise Email Security Platform.</p>
+                <div class="footer-links">
+                    <span>Rule-Based Detection System</span>
+                    <span class="footer-divider">•</span>
+                    <span>100% Secured</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
