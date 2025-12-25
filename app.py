@@ -9,14 +9,14 @@ from email.parser import BytesParser
 from datetime import datetime
 import secrets
 from urllib.parse import urlparse
+import tempfile
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(32)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-# Ensure upload folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Use temp directory for Vercel serverless
+app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
 
 # In-memory user storage (replace with database in production)
 users = {}
@@ -481,6 +481,3 @@ def analyze_file():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-
-# For Vercel deployment
-app = app
