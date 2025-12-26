@@ -10,6 +10,7 @@ from datetime import datetime
 import secrets
 from urllib.parse import urlparse
 import tempfile
+import json
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
@@ -18,8 +19,29 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 # Use temp directory for Vercel serverless
 app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
 
-# In-memory user storage (replace with database in production)
-users = {}
+# User database file
+USERS_DB_FILE = os.path.join(os.path.dirname(__file__), 'users_db.json')
+
+# Load users from file or create empty dict
+def load_users():
+    if os.path.exists(USERS_DB_FILE):
+        try:
+            with open(USERS_DB_FILE, 'r') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def save_users(users_data):
+    try:
+        with open(USERS_DB_FILE, 'w') as f:
+            json.dump(users_data, f, indent=2)
+        return True
+    except:
+        return False
+
+# Load users on startup
+users = load_users()
 
 # Suspicious patterns and indicators
 SUSPICIOUS_KEYWORDS = [
@@ -383,6 +405,10 @@ def register():
         'created_at': datetime.now().isoformat()
     }
     
+    # Save to file
+    if not save_users(users):
+        return jsonify({'success': False, 'message': 'Error saving user data'}), 500
+    
     return jsonify({'success': True, 'message': 'Registration successful'})
 
 
@@ -480,4 +506,4 @@ def analyze_file():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
