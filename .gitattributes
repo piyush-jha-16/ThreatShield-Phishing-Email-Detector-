@@ -1,0 +1,7 @@
+# Mark HTML and CSS as documentation to exclude from language statistics
+*.html linguist-documentation
+*.css linguist-documentation
+*.js linguist-documentation
+
+# Ensure Python is detected
+*.py linguist-detectable
