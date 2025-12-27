@@ -12,10 +12,16 @@
 </head>
 <body>
     <!-- Authentication Modal -->
-    <div id="authModal" class="modal active">
-        <div class="modal-backdrop"></div>
+    <div id="authModal" class="modal">
+        <div class="modal-backdrop" onclick="closeAuthModal()"></div>
         <div class="modal-content">
             <div class="auth-container">
+                <button class="modal-close-btn" onclick="closeAuthModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
                 <div class="auth-header">
                     <div class="logo">
                         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,7 +101,7 @@
     </div>
 
     <!-- Main Application -->
-    <div id="mainApp" class="main-app">
+    <div id="mainApp" class="main-app active">
         <!-- Header -->
         <header class="app-header">
             <div class="header-content">
@@ -111,14 +117,22 @@
                     <span class="header-title">Email Threat Analysis</span>
                 </div>
                 <div class="header-right">
-                    <div class="user-info">
+                    <div id="userInfoSection" class="user-info" style="display: none;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="8" r="4"/>
                             <path d="M6 21V19C6 16.7909 7.79086 15 10 15H14C16.2091 15 18 16.7909 18 19V21"/>
                         </svg>
                         <span id="currentUser"></span>
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="handleLogout()">
+                    <button id="loginBtn" class="btn btn-primary btn-sm" onclick="showLoginModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                            <polyline points="10 17 15 12 10 7"/>
+                            <line x1="15" y1="12" x2="3" y2="12"/>
+                        </svg>
+                        <span>Sign In</span>
+                    </button>
+                    <button id="logoutBtn" class="btn btn-secondary btn-sm" onclick="handleLogout()" style="display: none;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                             <polyline points="16 17 21 12 16 7"/>
@@ -332,10 +346,10 @@
                     <div class="result-card">
                         <div class="card-header">
                             <h3>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                    <line x1="12" y1="9" x2="12" y2="13"/>
-                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                                 </svg>
                                 Detection Flags
                             </h3>
